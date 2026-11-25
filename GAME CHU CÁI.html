@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Bé Thu Hoạch Táo Chữ Cái</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(180deg, #6FD3FF 0%, #B9EDFF 52%, #E8FAD2 76%, #88D63C 77%, #56AC1C 100%);
+    }
+
+    #game-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Mặt trời & Mây trang trí */
+    .sun-decor {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      width: 72px;
+      height: 72px;
+      background: radial-gradient(circle, #FFF59D 20%, #FFD54F 65%, #FFA726 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 32px rgba(255, 213, 79, 0.9);
+      z-index: 1;
+      animation: sunPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes sunPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.07); }
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 999px;
+      z-index: 1;
+      box-shadow: 0 6px 14px rgba(0, 110, 170, 0.08);
+    }
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 50%;
+    }
+    .cloud-1 {
+      top: 26px;
+      left: 16%;
+      width: 110px;
+      height: 36px;
+      animation: cloudDrift 34s linear infinite;
+    }
+    .cloud-1::before { width: 52px; height: 52px; top: -24px; left: 16px; }
+    .cloud-1::after { width: 40px; height: 40px; top: -16px; left: 54px; }
+
+    .cloud-2 {
+      top: 44px;
+      right: 18%;
+      width: 130px;
+      height: 40px;
+      animation: cloudDrift 42s linear infinite reverse;
+    }
+    .cloud-2::before { width: 58px; height: 58px; top: -26px; left: 22px; }
+    .cloud-2::after { width: 44px; height: 44px; top: -18px; left: 66px; }
+
+    @keyframes cloudDrift {
+      0% { transform: translateX(-25px); }
+      50% { transform: translateX(35px); }
+      100% { transform: translateX(-25px); }
+    }
+
+    /* Thanh điều khiển phía trên */
+    #top-bar {
+      position: relative;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .hud-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+      flex-wrap: wrap;
+    }
+
+    .pill-badge {
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #FFB300;
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-weight: 900;
+      font-size: clamp(0.95rem, 1.9vw, 1.25rem);
+      color: #4E2A04;
+      box-shadow: 0 4px 0 #E08E00, 0 8px 16px rgba(0, 0, 0, 0.12);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: #FFFFFF;
+      border: 3px solid #43A047;
+      border-radius: 16px;
+      padding: 7px 13px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: clamp(0.85rem, 1.6vw, 1rem);
+      color: #1B5E20;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #2E7D32, 0 6px 12px rgba(0, 0, 0, 0.12);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .icon-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #2E7D32;
+    }
+    .icon-btn.secondary {
+      border-color: #0288D1;
+      color: #01579B;
+      box-shadow: 0 4px 0 #0277BD, 0 6px 12px rgba(0, 0, 0, 0.12);
+    }
+    .icon-btn.secondary:active {
+      box-shadow: 0 1px 0 #0277BD;
+    }
+    .icon-btn.warn {
+      border-color: #F57C00;
+      color: #E65100;
+      box-shadow: 0 4px 0 #EF6C00, 0 6px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Khu vực Cây Táo Cười */
+    #tree-area {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 10;
+      min-height: 0;
+    }
+
+    #tree-stage {
+      position: relative;
+      height: 100%;
+      width: min(98vw, 1340px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    #tree-image {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      transform-origin: bottom center;
+    }
+
+    #tree-image svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 8px 16px rgba(35, 75, 15, 0.22));
+    }
+
+    .tree-happy-bounce {
+      animation: treeBounce 0.55s ease;
+    }
+
+    @keyframes treeBounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.035, 0.975); }
+      60% { transform: scale(0.985, 1.025); }
+      100% { transform: scale(1); }
+    }
+
+    /* Quả táo đỏ căng mọng to rõ ràng trên tán cây & khi kéo thả */
+    .apple-item {
+      cursor: grab;
+      touch-action: none;
+      pointer-events: auto;
+      transition: opacity 0.15s ease, filter 0.15s ease;
+    }
+
+    .apple-item:hover {
+      filter: brightness(1.07);
+    }
+
+    .apple-floating-drag {
+      position: fixed;
+      width: clamp(78px, 8.2vw, 108px);
+      height: clamp(85px, 9vw, 118px);
+      transform: translate(-50%, -50%) scale(1.12) rotate(-5deg);
+      cursor: grabbing;
+      z-index: 9999 !important;
+      pointer-events: none;
+      filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.35));
+    }
+
+    .apple-letter {
+      position: absolute;
+      top: 57%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(2.1rem, 3.3vw, 3rem);
+      font-weight: 900;
+      color: #FFFFFF;
+      text-shadow:
+        -2.5px -2.5px 0 #7A0909,
+         2.5px -2.5px 0 #7A0909,
+        -2.5px  2.5px 0 #7A0909,
+         2.5px  2.5px 0 #7A0909,
+         0px    3px 5px rgba(0, 0, 0, 0.45);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    /* Hàng giỏ chữ cái ở phía dưới màn hình */
+    #baskets-dock {
+      position: relative;
+      z-index: 30;
+      width: 100%;
+      padding: 6px 16px 14px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: clamp(16px, 4vw, 54px);
+      background: linear-gradient(180deg, rgba(114, 198, 43, 0) 0%, rgba(74, 158, 22, 0.45) 100%);
+    }
+
+    .basket-slot {
+      position: relative;
+      flex: 1;
+      max-width: 220px;
+      min-width: 115px;
+      height: clamp(106px, 16vh, 146px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .basket-slot.highlight {
+      transform: scale(1.08) translateY(-6px);
+    }
+
+    .basket-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 8px 12px rgba(45, 25, 5, 0.3));
+    }
+
+    .basket-label-badge {
+      position: absolute;
+      bottom: 14%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(50px, 6.2vw, 68px);
+      height: clamp(50px, 6.2vw, 68px);
+      background: #FFFFFF;
+      border-radius: 50%;
+      border: 4px solid #FFE082;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), inset 0 -3px 6px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.9rem, 3.1vw, 2.7rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .basket-counter {
+      position: absolute;
+      top: 4px;
+      right: 8%;
+      background: #FFF8E1;
+      border: 2.5px solid #FFA000;
+      color: #6D3B00;
+      font-size: 0.85rem;
+      font-weight: 900;
+      padding: 2px 9px;
+      border-radius: 999px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    }
+
+    /* Thông báo phản hồi nhanh */
+    #toast-feedback {
+      position: fixed;
+      top: 15%;
+      left: 50%;
+      transform: translate(-50%, -20px) scale(0.9);
+      background: rgba(255, 255, 255, 0.97);
+      border: 4px solid #4CAF50;
+      color: #1B5E20;
+      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+      font-weight: 900;
+      padding: 10px 26px;
+      border-radius: 999px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    #toast-feedback.show {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1);
+    }
+
+    #toast-feedback.error {
+      border-color: #FF7043;
+      color: #BF360C;
+    }
+
+    /* Cửa sổ Modal (Cài đặt & Chiến thắng) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 42, 14, 0.58);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #FFFDF7;
+      border: 5px solid #66BB6A;
+      border-radius: 28px;
+      width: 100%;
+      max-width: 540px;
+      padding: 24px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      color: #3E2723;
+      animation: popIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.82); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-title {
+      margin: 0 0 14px;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #2E7D32;
+      text-align: center;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .preset-btn {
+      background: #F1F8E9;
+      border: 2.5px solid #AED581;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #33691E;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .preset-btn:hover, .preset-btn.active {
+      background: #DCEDC8;
+      border-color: #43A047;
+      box-shadow: 0 3px 0 #43A047;
+    }
+
+    .form-row {
+      margin-bottom: 14px;
+    }
+
+    .form-row label {
+      display: block;
+      font-weight: 800;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      color: #4E342E;
+    }
+
+    .form-row input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2.5px solid #CFD8DC;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #263238;
+      outline: none;
+    }
+
+    .form-row input:focus {
+      border-color: #43A047;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #66BB6A 0%, #43A047 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 16px;
+      padding: 12px 26px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #2E7D32;
+    }
+
+    .btn-primary:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #2E7D32;
+    }
+
+    .btn-cancel {
+      background: #ECEFF1;
+      color: #455A64;
+      border: none;
+      border-radius: 16px;
+      padding: 12px 22px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #B0BEC5;
+    }
+
+    /* Pháo giấy chúc mừng */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 250;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-wrapper">
+    <!-- Trang trí bầu trời -->
+    <div class="sun-decor"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+
+    <!-- Thanh công cụ phía trên -->
+    <header id="top-bar">
+      <div class="hud-group">
+        <div class="pill-badge">
+          <span>🍎</span>
+          <span id="score-text">Đã hái: 0 / 9</span>
+        </div>
+      </div>
+
+      <div class="hud-group">
+        <button id="btn-music" class="icon-btn secondary" title="Bật hoặc tắt nhạc nền">
+          <span id="music-icon">🎵</span>
+          <span id="music-label">Nhạc: Bật</span>
+        </button>
+        <button id="btn-settings" class="icon-btn warn" title="Đổi nhóm chữ cái">
+          <span>⚙️</span>
+          <span>Đổi chữ cái</span>
+        </button>
+        <button id="btn-restart" class="icon-btn" title="Chơi lại từ đầu">
+          <span>🔄</span>
+          <span>Chơi lại</span>
+        </button>
+        <button id="btn-fullscreen" class="icon-btn secondary" title="Phóng to toàn màn hình">
+          <span>⛶</span>
+          <span id="fs-label">Toàn màn hình</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Tầng giữa: Cây Táo Cười tán rộng lớn & các quả táo nằm chuẩn xác trên tán lá -->
+    <main id="tree-area">
+      <div id="tree-stage">
+        <div id="tree-image" aria-label="Cây táo cười">
+          <svg id="tree-main-svg" viewBox="0 0 960 580" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="canopyDark" cx="50%" cy="40%" r="55%">
+                <stop offset="0%" stop-color="#389E18" />
+                <stop offset="100%" stop-color="#1E6B0A" />
+              </radialGradient>
+              <radialGradient id="canopyMid" cx="45%" cy="35%" r="55%">
+                <stop offset="0%" stop-color="#68D81A" />
+                <stop offset="100%" stop-color="#359B12" />
+              </radialGradient>
+              <radialGradient id="canopyLight" cx="40%" cy="30%" r="55%">
+                <stop offset="0%" stop-color="#A6F226" />
+                <stop offset="100%" stop-color="#58C414" />
+              </radialGradient>
+              <linearGradient id="trunkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#9A5216" />
+                <stop offset="35%" stop-color="#CC7729" />
+                <stop offset="70%" stop-color="#B5631E" />
+                <stop offset="100%" stop-color="#87440F" />
+              </linearGradient>
+              <radialGradient id="grassBase" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#8CE832" />
+                <stop offset="100%" stop-color="#58B818" />
+              </radialGradient>
+              <radialGradient id="appleRedShared" cx="35%" cy="30%" r="65%">
+                <stop offset="0%" stop-color="#FF8585" />
+                <stop offset="35%" stop-color="#EB1C1C" />
+                <stop offset="85%" stop-color="#B30707" />
+                <stop offset="100%" stop-color="#750202" />
+              </radialGradient>
+              <linearGradient id="leafGreenShared" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#94F22E" />
+                <stop offset="100%" stop-color="#2B850D" />
+              </linearGradient>
+            </defs>
+
+            <!-- Thảm cỏ & đá dưới gốc cây -->
+            <ellipse cx="480" cy="542" rx="245" ry="26" fill="url(#grassBase)" stroke="#3D8A0E" stroke-width="3" />
+            <ellipse cx="325" cy="534" rx="24" ry="12" fill="#9E9E9E" stroke="#4E4E4E" stroke-width="3" />
+            <ellipse cx="405" cy="548" rx="26" ry="13" fill="#B0B0B0" stroke="#4E4E4E" stroke-width="3" />
+            <ellipse cx="630" cy="536" rx="24" ry="12" fill="#9E9E9E" stroke="#4E4E4E" stroke-width="3" />
+
+            <!-- Bụi cỏ nhỏ quanh gốc -->
+            <path d="M355 535 L348 512 L362 528 L366 508 L373 530 L382 514 L378 536 Z" fill="#4CAF50" stroke="#25630A" stroke-width="2" />
+            <path d="M575 536 L570 514 L582 529 L588 510 L595 530 L604 516 L599 538 Z" fill="#4CAF50" stroke="#25630A" stroke-width="2" />
+            <path d="M455 552 L450 532 L461 545 L466 528 L473 546 L481 533 L477 553 Z" fill="#64DD17" stroke="#25630A" stroke-width="2" />
+
+            <!-- Tán lá lớp sau siêu rộng và xòe đều hai bên -->
+            <g fill="url(#canopyDark)" stroke="#195907" stroke-width="4.5" stroke-linejoin="round">
+              <circle cx="120" cy="245" r="98" />
+              <circle cx="195" cy="142" r="95" />
+              <circle cx="325" cy="88" r="92" />
+              <circle cx="480" cy="76" r="96" />
+              <circle cx="635" cy="88" r="92" />
+              <circle cx="765" cy="142" r="95" />
+              <circle cx="840" cy="245" r="98" />
+              <circle cx="790" cy="318" r="85" />
+              <circle cx="170" cy="318" r="85" />
+              <ellipse cx="480" cy="222" rx="335" ry="168" />
+            </g>
+
+            <!-- Thân cây & các cành vươn rộng ra hai bên -->
+            <g stroke="#4A2204" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M418 305 L245 225 L264 205 L438 282 Z" fill="url(#trunkGrad)" />
+              <path d="M445 278 L350 152 L377 142 L472 264 Z" fill="url(#trunkGrad)" />
+              <path d="M518 278 L610 152 L637 164 L542 288 Z" fill="url(#trunkGrad)" />
+              <path d="M538 308 L715 225 L732 246 L548 332 Z" fill="url(#trunkGrad)" />
+
+              <!-- Thân chính & rễ cây vững chãi -->
+              <path d="M428 265 C432 355 423 435 358 512 C386 522 408 512 424 492 C408 520 394 534 381 544 C418 546 446 525 464 498 C471 520 478 534 488 544 C504 532 508 514 510 495 C531 524 554 542 581 546 C568 526 554 512 541 492 C562 510 584 518 606 510 C538 435 528 355 532 265 Z" fill="url(#trunkGrad)" />
+            </g>
+
+            <!-- Vân gỗ trên thân cây -->
+            <path d="M443 405 Q438 440 423 470" fill="none" stroke="#6E3509" stroke-width="3.5" stroke-linecap="round" />
+            <path d="M516 400 Q522 438 536 468" fill="none" stroke="#6E3509" stroke-width="3.5" stroke-linecap="round" />
+            <ellipse cx="520" cy="436" rx="5" ry="12" fill="#7A3C0B" />
+
+            <!-- Tán lá lớp giữa xòe rộng -->
+            <g fill="url(#canopyMid)" stroke="#216E0A" stroke-width="4" stroke-linejoin="round">
+              <circle cx="135" cy="255" r="80" />
+              <circle cx="240" cy="175" r="86" />
+              <circle cx="365" cy="116" r="82" />
+              <circle cx="480" cy="110" r="84" />
+              <circle cx="595" cy="116" r="82" />
+              <circle cx="720" cy="175" r="86" />
+              <circle cx="825" cy="255" r="80" />
+              <circle cx="270" cy="278" r="72" />
+              <circle cx="690" cy="278" r="72" />
+            </g>
+
+            <!-- Tán lá lớp sáng nổi bật phía trước -->
+            <g fill="url(#canopyLight)" stroke="#297D0E" stroke-width="3.5" stroke-linejoin="round">
+              <path d="M335 142 C315 108 362 80 396 98 C416 58 482 58 504 96 C542 80 588 112 570 146 C598 168 574 206 538 196 C516 224 462 222 442 196 C408 216 356 196 358 166 C330 164 324 150 335 142 Z" />
+              <path d="M98 242 C80 216 114 190 144 205 C166 178 214 190 218 222 C240 240 220 276 190 270 C170 292 128 286 116 265 C92 265 88 250 98 242 Z" />
+              <path d="M725 242 C708 216 742 190 772 205 C794 178 842 190 846 222 C868 240 848 276 818 270 C798 292 756 286 744 265 C720 265 716 250 725 242 Z" />
+            </g>
+
+            <!-- Khuôn mặt cười rạng rỡ nổi bật rõ ràng trên thân cây -->
+            <g id="tree-face">
+              <path d="M441 324 Q454 313 467 321" fill="none" stroke="#3D1C02" stroke-width="4.5" stroke-linecap="round" />
+              <path d="M494 320 Q507 311 520 322" fill="none" stroke="#3D1C02" stroke-width="4.5" stroke-linecap="round" />
+
+              <ellipse cx="455" cy="348" rx="15" ry="20" fill="#FFFFFF" stroke="#2D1402" stroke-width="3.5" />
+              <ellipse cx="458" cy="350" rx="9" ry="13" fill="#231206" />
+              <circle cx="454" cy="343" r="4" fill="#FFFFFF" />
+
+              <ellipse cx="504" cy="347" rx="15" ry="20" fill="#FFFFFF" stroke="#2D1402" stroke-width="3.5" />
+              <ellipse cx="501" cy="349" rx="9" ry="13" fill="#231206" />
+              <circle cx="497" cy="342" r="4" fill="#FFFFFF" />
+
+              <path d="M475 368 Q481 374 487 368" fill="none" stroke="#6E3509" stroke-width="3.5" stroke-linecap="round" />
+
+              <path d="M457 384 Q481 396 505 383 C502 414 461 415 457 384 Z" fill="#631414" stroke="#2D1402" stroke-width="3.5" stroke-linejoin="round" />
+              <path d="M467 401 Q481 393 495 401 C490 409 472 409 467 401 Z" fill="#FF6B6B" />
+            </g>
+
+            <!-- Chiếc lá điểm nhấn sinh động -->
+            <g fill="#76E81E" stroke="#1E6308" stroke-width="3" stroke-linejoin="round">
+              <path d="M455 58 Q480 36 506 56 Q482 76 455 58 Z" />
+              <path d="M285 120 Q310 100 332 124 Q306 142 285 120 Z" />
+              <path d="M625 120 Q652 100 674 124 Q648 142 625 120 Z" />
+              <path d="M165 182 Q192 164 212 190 Q186 206 165 182 Z" />
+              <path d="M755 182 Q782 164 802 190 Q776 206 755 182 Z" />
+            </g>
+
+            <!-- Lớp chứa các quả táo to rõ ràng nằm trực tiếp bên trong tán lá -->
+            <g id="svg-apples-layer"></g>
+          </svg>
+        </div>
+      </div>
+    </main>
+
+    <!-- Tầng dưới: Hàng giỏ đựng chữ cái -->
+    <footer id="baskets-dock"></footer>
+  </div>
+
+  <!-- Thông báo phản hồi -->
+  <div id="toast-feedback"></div>
+
+  <!-- Cửa sổ Cấu hình nhóm chữ cái -->
+  <div id="settings-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <h2 class="modal-title">⚙️ Cấu Hình Nhóm Chữ Cái Cho Bé</h2>
+
+      <div class="preset-grid">
+        <button type="button" class="preset-btn active" data-targets="i,t,c" data-decoys="u,ư,e,ê">
+          🍎 Nhóm i, t, c (nhiễu u, ư, e, ê)
+        </button>
+        <button type="button" class="preset-btn" data-targets="o,ô,ơ" data-decoys="a,ă,â,u">
+          🍊 Nhóm o, ô, ơ (nhiễu a, ă, â, u)
+        </button>
+        <button type="button" class="preset-btn" data-targets="a,ă,â" data-decoys="o,ô,e,ê">
+          🍓 Nhóm a, ă, â (nhiễu o, ô, e, ê)
+        </button>
+        <button type="button" class="preset-btn" data-targets="e,ê" data-decoys="c,o,u,ư,i">
+          🍐 Nhóm e, ê (nhiễu c, o, u, ư, i)
+        </button>
+        <button type="button" class="preset-btn" data-targets="u,ư" data-decoys="n,m,i,t,c">
+          🍇 Nhóm u, ư (nhiễu n, m, i, t, c)
+        </button>
+        <button type="button" class="preset-btn" data-targets="b,d,đ" data-decoys="p,q,t,l">
+          🍑 Nhóm b, d, đ (nhiễu p, q, t, l)
+        </button>
+      </div>
+
+      <div class="form-row">
+        <label for="input-targets">Các chữ cái trên giỏ (cách nhau bằng dấu phẩy, 2 - 4 chữ):</label>
+        <input type="text" id="input-targets" value="i, t, c" placeholder="Ví dụ: i, t, c" />
+      </div>
+
+      <div class="form-row">
+        <label for="input-decoys">Các chữ cái gây nhiễu trên cây (cách nhau bằng dấu phẩy):</label>
+        <input type="text" id="input-decoys" value="u, ư, e, ê" placeholder="Ví dụ: u, ư, e, ê" />
+      </div>
+
+      <div class="form-row">
+        <label for="input-per-basket">Số quả táo đúng cho mỗi giỏ (1 - 5 quả):</label>
+        <input type="number" id="input-per-basket" value="3" min="1" max="5" />
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="btn-close-settings" class="btn-cancel">Đóng</button>
+        <button type="button" id="btn-apply-settings" class="btn-primary">Áp dụng & Chơi ngay</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cửa sổ Chúc mừng hoàn thành -->
+  <div id="win-modal" class="modal-backdrop">
+    <div class="modal-card" style="text-align: center;">
+      <div style="font-size: 4rem; margin-bottom: 6px;">🎉🏆🍎</div>
+      <h2 class="modal-title" style="font-size: 1.8rem; color: #D84315;">Hoan Hô! Bé Giỏi Quá!</h2>
+      <p style="font-size: 1.15rem; font-weight: 800; color: #4E342E; margin-bottom: 20px;">
+        Bé đã thu hoạch đúng tất cả các quả táo chữ cái vào đúng giỏ rồi!
+      </p>
+      <div class="modal-actions">
+        <button type="button" id="btn-play-again" class="btn-primary">Chơi lại ván mới 🔄</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <script>
+    // Bảng màu chuẩn chữ cái mầm non
+    const LETTER_PALETTE = {
+      'i': '#F43E1A',
+      't': '#22C405',
+      'c': '#E40084',
+      'o': '#FF6D00',
+      'ô': '#0091EA',
+      'ơ': '#8E24AA',
+      'a': '#E53935',
+      'ă': '#00ACC1',
+      'â': '#43A047',
+      'e': '#F4511E',
+      'ê': '#3949AB',
+      'u': '#D81B60',
+      'ư': '#00897B',
+      'b': '#1E88E5',
+      'd': '#7CB342',
+      'đ': '#FB8C00'
+    };
+    const FALLBACK_COLORS = ['#F43E1A', '#22C405', '#E40084', '#0288D1'];
+
+    const gameState = {
+      targets: ['i', 't', 'c'],
+      decoys: ['u', 'ư', 'e', 'ê'],
+      applesPerTarget: 3,
+      collectedByLetter: {},
+      totalCollected: 0,
+      totalRequired: 9,
+      musicEnabled: true
+    };
+
+    // 16 tọa độ chuẩn xác trong không gian SVG 960x580 của tán cây (cách nhau >= 110px, không bao giờ đè nhau hay che mặt cây)
+    const CANOPY_POSITIONS = [
+      // Tầng đỉnh tán lá (4 quả to rõ)
+      { x: 295, y: 112 },
+      { x: 418, y: 98 },
+      { x: 542, y: 98 },
+      { x: 665, y: 112 },
+      // Tầng giữa tán lá (6 quả trải rộng toàn bộ chiều ngang tán)
+      { x: 185, y: 196 },
+      { x: 305, y: 192 },
+      { x: 422, y: 184 },
+      { x: 538, y: 184 },
+      { x: 655, y: 192 },
+      { x: 775, y: 196 },
+      // Tầng dưới hai bên tán lá (6 quả, né hoàn toàn vùng khuôn mặt cây ở giữa)
+      { x: 120, y: 282 },
+      { x: 242, y: 280 },
+      { x: 360, y: 268 },
+      { x: 600, y: 268 },
+      { x: 718, y: 280 },
+      { x: 840, y: 282 }
+    ];
+
+    // Hệ thống âm thanh Web Audio API (100% nhạc cụ trong trẻo, không có lời nói tiếng Anh)
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.bgTimer = null;
+        this.noteIndex = 0;
+        this.melody = [
+          523.25, 659.25, 783.99, 659.25,
+          587.33, 698.46, 880.00, 698.46,
+          523.25, 659.25, 783.99, 1046.50,
+          783.99, 659.25, 587.33, 523.25
+        ];
+      }
+
+      ensureContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, duration = 0.25, type = 'sine', volume = 0.12, delay = 0) {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime + delay;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.exponentialRampToValueAtTime(volume, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }
+
+      playPop() {
+        this.ensureContext();
+        this.playTone(580, 0.12, 'triangle', 0.18, 0);
+        this.playTone(760, 0.14, 'sine', 0.14, 0.04);
+      }
+
+      playSuccess() {
+        this.ensureContext();
+        this.playTone(523.25, 0.18, 'triangle', 0.22, 0);
+        this.playTone(659.25, 0.18, 'triangle', 0.22, 0.09);
+        this.playTone(783.99, 0.24, 'triangle', 0.24, 0.18);
+        this.playTone(1046.50, 0.35, 'sine', 0.25, 0.27);
+      }
+
+      playWrong() {
+        this.ensureContext();
+        this.playTone(260, 0.2, 'sawtooth', 0.12, 0);
+        this.playTone(210, 0.26, 'sawtooth', 0.12, 0.14);
+      }
+
+      playFanfare() {
+        this.ensureContext();
+        const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50];
+        notes.forEach((n, idx) => {
+          this.playTone(n, 0.28, 'triangle', 0.24, idx * 0.13);
+        });
+      }
+
+      startBgMusic() {
+        if (this.bgTimer) return;
+        this.bgTimer = setInterval(() => {
+          if (!gameState.musicEnabled || !this.ctx || this.ctx.state !== 'running') return;
+          const freq = this.melody[this.noteIndex % this.melody.length];
+          this.playTone(freq, 0.32, 'sine', 0.045, 0);
+          this.noteIndex++;
+        }, 460);
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // DOM Elements
+    const svgApplesLayer = document.getElementById('svg-apples-layer');
+    const basketsDock = document.getElementById('baskets-dock');
+    const scoreText = document.getElementById('score-text');
+    const toastFeedback = document.getElementById('toast-feedback');
+    const treeImage = document.getElementById('tree-image');
+
+    let toastTimer = null;
+    function showToast(msg, isError = false) {
+      toastFeedback.textContent = msg;
+      toastFeedback.classList.toggle('error', isError);
+      toastFeedback.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastFeedback.classList.remove('show');
+      }, 1600);
+    }
+
+    function updateScoreDisplay() {
+      scoreText.textContent = `Đã hái: ${gameState.totalCollected} / ${gameState.totalRequired}`;
+    }
+
+    function getLetterColor(letter, idx) {
+      const lower = letter.toLowerCase();
+      return LETTER_PALETTE[lower] || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
+    }
+
+    // Dựng hàng giỏ chữ cái ở phía dưới màn hình
+    function renderBaskets() {
+      basketsDock.innerHTML = '';
+      gameState.targets.forEach((letter, idx) => {
+        const color = getLetterColor(letter, idx);
+        const slot = document.createElement('div');
+        slot.className = 'basket-slot';
+        slot.dataset.letter = letter;
+
+        slot.innerHTML = `
+          <div class="basket-counter" id="counter-${letter}">0/${gameState.applesPerTarget}</div>
+          <svg class="basket-svg" viewBox="0 0 220 155" xmlns="http://www.w3.org/2000/svg">
+            <path d="M42 54 C42 6 178 6 178 54" fill="none" stroke="#8D4E18" stroke-width="11" stroke-linecap="round" />
+            <path d="M42 54 C42 6 178 6 178 54" fill="none" stroke="#C87A32" stroke-width="6" stroke-linecap="round" stroke-dasharray="10 8" />
+            <path d="M22 54 L198 54 L176 142 C173 149 166 152 158 152 L62 152 C54 152 47 149 44 142 Z" fill="#D98A3C" stroke="#6E390E" stroke-width="5" stroke-linejoin="round" />
+            <path d="M28 78 L192 78 M34 104 L186 104 M40 130 L180 130" stroke="#A65E1E" stroke-width="3.5" />
+            <path d="M68 54 L76 150 M110 54 L110 150 M152 54 L144 150" stroke="#A65E1E" stroke-width="3.5" />
+            <rect x="14" y="44" width="192" height="18" rx="9" fill="#E69D4E" stroke="#6E390E" stroke-width="4.5" />
+          </svg>
+          <div class="basket-label-badge" style="color: ${color}; border-color: ${color};">
+            ${letter}
+          </div>
+        `;
+        basketsDock.appendChild(slot);
+      });
+    }
+
+    // Dựng đồ họa SVG cho quả táo khi kéo bay trên màn hình
+    function createFloatingAppleHTML(letter) {
+      return `
+        <svg viewBox="0 0 110 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="floatAppleGrad" cx="35%" cy="30%" r="65%">
+              <stop offset="0%" stop-color="#FF8585" />
+              <stop offset="35%" stop-color="#EB1C1C" />
+              <stop offset="85%" stop-color="#B30707" />
+              <stop offset="100%" stop-color="#750202" />
+            </radialGradient>
+            <linearGradient id="floatLeafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#94F22E" />
+              <stop offset="100%" stop-color="#2B850D" />
+            </linearGradient>
+          </defs>
+          <path d="M54 28 C53 16 57 9 62 6" fill="none" stroke="#5D3110" stroke-width="5.5" stroke-linecap="round" />
+          <path d="M56 20 C68 6 92 8 98 22 C84 31 66 29 56 20 Z" fill="url(#floatLeafGrad)" stroke="#1E6108" stroke-width="2.5" stroke-linejoin="round" />
+          <path d="M55 32 C42 22 14 26 12 56 C10 86 32 114 48 114 C52 114 54 111 55 111 C56 111 58 114 62 114 C78 114 100 86 98 56 C96 26 68 22 55 32 Z" fill="url(#floatAppleGrad)" stroke="#6B0404" stroke-width="3.5" />
+          <ellipse cx="32" cy="52" rx="8" ry="15" transform="rotate(-22 32 52)" fill="rgba(255, 255, 255, 0.45)" />
+        </svg>
+        <span class="apple-letter">${letter}</span>
+      `;
+    }
+
+    // Tạo danh sách các quả táo to rõ ràng nằm trực tiếp bên trong tán cây SVG (không bao giờ lệch hay đè nhau)
+    function spawnApples() {
+      svgApplesLayer.innerHTML = '';
+      const appleLetters = [];
+
+      // Thêm đúng số quả táo cho mỗi giỏ chữ cái
+      gameState.targets.forEach(letter => {
+        for (let i = 0; i < gameState.applesPerTarget; i++) {
+          appleLetters.push(letter);
+        }
+      });
+
+      // Tính số quả táo gây nhiễu để tổng số quả tối đa là 16 quả (khớp 16 tọa độ thoáng rộng trên tán cây)
+      const maxSlots = CANOPY_POSITIONS.length;
+      const remainingSlots = Math.max(0, maxSlots - appleLetters.length);
+      const decoyCount = Math.min(remainingSlots, Math.max(4, Math.floor(remainingSlots * 0.9)));
+
+      if (gameState.decoys.length > 0) {
+        for (let i = 0; i < decoyCount; i++) {
+          const decoyLetter = gameState.decoys[i % gameState.decoys.length];
+          appleLetters.push(decoyLetter);
+        }
+      }
+
+      // Xáo trộn vị trí các tọa độ tán cây & xáo trộn danh sách chữ cái
+      const shuffledPositions = [...CANOPY_POSITIONS].sort(() => Math.random() - 0.5);
+      const shuffledLetters = [...appleLetters].sort(() => Math.random() - 0.5);
+
+      const svgNS = 'http://www.w3.org/2000/svg';
+
+      shuffledLetters.forEach((letter, index) => {
+        const pos = shuffledPositions[index % shuffledPositions.length];
+        const g = document.createElementNS(svgNS, 'g');
+        g.setAttribute('class', 'apple-item');
+        g.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+        g.dataset.letter = letter;
+
+        // Quả táo to đẹp (bán kính ~48px trong hệ tọa độ SVG 960x580)
+        g.innerHTML = `
+          <g transform="translate(-48, -52) scale(0.88)">
+            <ellipse cx="55" cy="116" rx="28" ry="6" fill="rgba(18, 52, 6, 0.28)" />
+            <path d="M54 28 C53 16 57 9 62 6" fill="none" stroke="#5D3110" stroke-width="6" stroke-linecap="round" />
+            <path d="M56 20 C68 6 92 8 98 22 C84 31 66 29 56 20 Z" fill="url(#leafGreenShared)" stroke="#1E6108" stroke-width="3" stroke-linejoin="round" />
+            <path d="M58 20 Q76 17 94 21" fill="none" stroke="#B9F66C" stroke-width="1.8" stroke-linecap="round" />
+            <path d="M55 32 C42 22 14 26 12 56 C10 86 32 114 48 114 C52 114 54 111 55 111 C56 111 58 114 62 114 C78 114 100 86 98 56 C96 26 68 22 55 32 Z" fill="url(#appleRedShared)" stroke="#6B0404" stroke-width="4" />
+            <ellipse cx="32" cy="52" rx="8" ry="15" transform="rotate(-22 32 52)" fill="rgba(255, 255, 255, 0.48)" />
+            <circle cx="26" cy="70" r="3.8" fill="rgba(255, 255, 255, 0.36)" />
+          </g>
+          <text x="0" y="21" text-anchor="middle" font-family="'Nunito', sans-serif" font-weight="900" font-size="48"
+                fill="#FFFFFF" stroke="#7A0909" stroke-width="6.5" paint-order="stroke" stroke-linejoin="round">${letter}</text>
+        `;
+
+        setupDragAndDrop(g);
+        svgApplesLayer.appendChild(g);
+      });
+    }
+
+    // Xử lý kéo thả mượt mà bằng Pointer Events
+    function setupDragAndDrop(appleSvgGroup) {
+      let isDragging = false;
+      let pointerId = null;
+      let floatingClone = null;
+
+      appleSvgGroup.addEventListener('pointerdown', (e) => {
+        if (isDragging) return;
+        e.preventDefault();
+        sound.ensureContext();
+        sound.startBgMusic();
+        sound.playPop();
+
+        isDragging = true;
+        pointerId = e.pointerId;
+        appleSvgGroup.setPointerCapture(pointerId);
+        appleSvgGroup.style.opacity = '0.2';
+
+        floatingClone = document.createElement('div');
+        floatingClone.className = 'apple-floating-drag';
+        floatingClone.innerHTML = createFloatingAppleHTML(appleSvgGroup.dataset.letter);
+        floatingClone.style.left = `${e.clientX}px`;
+        floatingClone.style.top = `${e.clientY}px`;
+        document.body.appendChild(floatingClone);
+      });
+
+      appleSvgGroup.addEventListener('pointermove', (e) => {
+        if (!isDragging || e.pointerId !== pointerId || !floatingClone) return;
+        floatingClone.style.left = `${e.clientX}px`;
+        floatingClone.style.top = `${e.clientY}px`;
+        highlightHoveredBasket(e.clientX, e.clientY);
+      });
+
+      const endDrag = (e) => {
+        if (!isDragging || e.pointerId !== pointerId) return;
+        isDragging = false;
+        appleSvgGroup.releasePointerCapture(pointerId);
+        clearBasketHighlights();
+
+        if (floatingClone) {
+          floatingClone.remove();
+          floatingClone = null;
+        }
+
+        const targetBasket = getBasketAtPoint(e.clientX, e.clientY);
+        if (targetBasket) {
+          handleDropOnBasket(appleSvgGroup, targetBasket);
+        } else {
+          returnAppleToTree(appleSvgGroup);
+        }
+      };
+
+      appleSvgGroup.addEventListener('pointerup', endDrag);
+      appleSvgGroup.addEventListener('pointercancel', endDrag);
+    }
+
+    function getBasketAtPoint(clientX, clientY) {
+      const slots = document.querySelectorAll('.basket-slot');
+      for (const slot of slots) {
+        const rect = slot.getBoundingClientRect();
+        const pad = 18;
+        if (
+          clientX >= rect.left - pad &&
+          clientX <= rect.right + pad &&
+          clientY >= rect.top - pad &&
+          clientY <= rect.bottom + pad
+        ) {
+          return slot;
+        }
+      }
+      return null;
+    }
+
+    function highlightHoveredBasket(clientX, clientY) {
+      const hovered = getBasketAtPoint(clientX, clientY);
+      document.querySelectorAll('.basket-slot').forEach(slot => {
+        slot.classList.toggle('highlight', slot === hovered);
+      });
+    }
+
+    function clearBasketHighlights() {
+      document.querySelectorAll('.basket-slot').forEach(slot => {
+        slot.classList.remove('highlight');
+      });
+    }
+
+    function returnAppleToTree(appleSvgGroup) {
+      appleSvgGroup.style.opacity = '1';
+    }
+
+    function handleDropOnBasket(appleSvgGroup, basketSlot) {
+      const appleLetter = appleSvgGroup.dataset.letter;
+      const basketLetter = basketSlot.dataset.letter;
+
+      if (appleLetter === basketLetter) {
+        sound.playSuccess();
+        gameState.collectedByLetter[basketLetter] = (gameState.collectedByLetter[basketLetter] || 0) + 1;
+        gameState.totalCollected++;
+
+        const counterEl = document.getElementById(`counter-${basketLetter}`);
+        if (counterEl) {
+          counterEl.textContent = `${gameState.collectedByLetter[basketLetter]}/${gameState.applesPerTarget}`;
+        }
+
+        updateScoreDisplay();
+        showToast(`🌟 Giỏi lắm! Quả táo chữ "${appleLetter}" vào đúng giỏ "${basketLetter}" rồi!`);
+
+        treeImage.classList.remove('tree-happy-bounce');
+        void treeImage.offsetWidth;
+        treeImage.classList.add('tree-happy-bounce');
+
+        appleSvgGroup.remove();
+
+        if (gameState.totalCollected >= gameState.totalRequired) {
+          setTimeout(() => {
+            sound.playFanfare();
+            launchConfetti();
+            document.getElementById('win-modal').classList.add('open');
+          }, 450);
+        }
+      } else {
+        sound.playWrong();
+        if (gameState.targets.includes(appleLetter)) {
+          showToast(`🙈 Đây là chữ "${appleLetter}", chưa đúng giỏ chữ "${basketLetter}" bé ơi!`, true);
+        } else {
+          showToast(`🤭 Quả táo chữ "${appleLetter}" không có giỏ nào ở dưới đâu bé ơi!`, true);
+        }
+        returnAppleToTree(appleSvgGroup);
+      }
+    }
+
+    // Khởi tạo / Chơi lại ván mới
+    function initGame() {
+      gameState.collectedByLetter = {};
+      gameState.targets.forEach(l => gameState.collectedByLetter[l] = 0);
+      gameState.totalCollected = 0;
+      gameState.totalRequired = gameState.targets.length * gameState.applesPerTarget;
+
+      updateScoreDisplay();
+      renderBaskets();
+      spawnApples();
+      stopConfetti();
+    }
+
+    // Xử lý các nút điều khiển
+    document.getElementById('btn-restart').addEventListener('click', () => {
+      sound.ensureContext();
+      sound.playPop();
+      initGame();
+      showToast('🔄 Đã bày lại cây táo mới cho bé!');
+    });
+
+    document.getElementById('btn-play-again').addEventListener('click', () => {
+      document.getElementById('win-modal').classList.remove('open');
+      initGame();
+    });
+
+    // Bật / tắt nhạc nền
+    const btnMusic = document.getElementById('btn-music');
+    const musicIcon = document.getElementById('music-icon');
+    const musicLabel = document.getElementById('music-label');
+    btnMusic.addEventListener('click', () => {
+      sound.ensureContext();
+      gameState.musicEnabled = !gameState.musicEnabled;
+      if (gameState.musicEnabled) {
+        sound.startBgMusic();
+        musicIcon.textContent = '🎵';
+        musicLabel.textContent = 'Nhạc: Bật';
+      } else {
+        musicIcon.textContent = '🔇';
+        musicLabel.textContent = 'Nhạc: Tắt';
+      }
+    });
+
+    // Nút Toàn màn hình
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    const fsLabel = document.getElementById('fs-label');
+    btnFullscreen.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {
+          showToast('Trình duyệt đang giới hạn chế độ toàn màn hình.', true);
+        });
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      fsLabel.textContent = document.fullscreenElement ? 'Thu nhỏ' : 'Toàn màn hình';
+    });
+
+    // Cửa sổ Cấu hình chữ cái
+    const settingsModal = document.getElementById('settings-modal');
+    const inputTargets = document.getElementById('input-targets');
+    const inputDecoys = document.getElementById('input-decoys');
+    const inputPerBasket = document.getElementById('input-per-basket');
+
+    document.getElementById('btn-settings').addEventListener('click', () => {
+      inputTargets.value = gameState.targets.join(', ');
+      inputDecoys.value = gameState.decoys.join(', ');
+      inputPerBasket.value = gameState.applesPerTarget;
+      settingsModal.classList.add('open');
+    });
+
+    document.getElementById('btn-close-settings').addEventListener('click', () => {
+      settingsModal.classList.remove('open');
+    });
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        inputTargets.value = btn.dataset.targets.split(',').join(', ');
+        inputDecoys.value = btn.dataset.decoys.split(',').join(', ');
+      });
+    });
+
+    document.getElementById('btn-apply-settings').addEventListener('click', () => {
+      const parsedTargets = inputTargets.value
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .slice(0, 4);
+
+      if (parsedTargets.length < 2) {
+        showToast('Thầy/cô vui lòng nhập ít nhất 2 chữ cái cho giỏ nhé!', true);
+        return;
+      }
+
+      const parsedDecoys = inputDecoys.value
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s && !parsedTargets.includes(s));
+
+      const perBasket = Math.min(5, Math.max(1, parseInt(inputPerBasket.value, 10) || 3));
+
+      gameState.targets = parsedTargets;
+      gameState.decoys = parsedDecoys;
+      gameState.applesPerTarget = perBasket;
+
+      settingsModal.classList.remove('open');
+      initGame();
+      showToast(`✅ Đã đổi sang nhóm chữ: ${parsedTargets.join(', ')}`);
+    });
+
+    // Hiệu ứng pháo giấy chúc mừng
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const cCtx = confettiCanvas.getContext('2d');
+    let confettiPieces = [];
+    let confettiAnimId = null;
+
+    function launchConfetti() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+      const colors = ['#FF5252', '#FFD740', '#69F0AE', '#40C4FF', '#E040FB', '#FF6E40'];
+      confettiPieces = Array.from({ length: 110 }, () => ({
+        x: Math.random() * confettiCanvas.width,
+        y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+        w: 8 + Math.random() * 8,
+        h: 12 + Math.random() * 10,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speedY: 2.5 + Math.random() * 3.5,
+        speedX: -1.5 + Math.random() * 3,
+        rot: Math.random() * 360,
+        rotSpeed: -4 + Math.random() * 8
+      }));
+
+      function drawConfetti() {
+        cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        confettiPieces.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rot += p.rotSpeed;
+          if (p.y > confettiCanvas.height) p.y = -20;
+
+          cCtx.save();
+          cCtx.translate(p.x, p.y);
+          cCtx.rotate((p.rot * Math.PI) / 180);
+          cCtx.fillStyle = p.color;
+          cCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          cCtx.restore();
+        });
+        confettiAnimId = requestAnimationFrame(drawConfetti);
+      }
+      drawConfetti();
+    }
+
+    function stopConfetti() {
+      if (confettiAnimId) {
+        cancelAnimationFrame(confettiAnimId);
+        confettiAnimId = null;
+      }
+      cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
+
+    // Khởi chạy game khi tải trang
+    window.addEventListener('DOMContentLoaded', initGame);
+  </script>
+</body>
+</html>
